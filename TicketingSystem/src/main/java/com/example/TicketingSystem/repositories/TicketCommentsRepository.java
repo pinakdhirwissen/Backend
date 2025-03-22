@@ -8,6 +8,5 @@ import java.util.List;
 
 @Repository
 public interface TicketCommentsRepository extends JpaRepository<TicketComments, String> {
-
-    List<TicketComments> findByTicket_Id(String ticketId);
+    List<TicketComments> findByTicketId(String ticketId);
 }

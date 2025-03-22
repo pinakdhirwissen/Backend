@@ -1,6 +1,7 @@
 package com.example.TicketingSystem.controllers;
 
 import com.example.TicketingSystem.models.TicketDepartment;
+import com.example.TicketingSystem.repositories.TicketDepartmentRepository;
 import com.example.TicketingSystem.services.TicketDepartmentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -11,11 +12,13 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/departments")
+@RequestMapping("/api/department")
 public class TicketDepartmentController {
 
     @Autowired
     private TicketDepartmentService ticketDepartmentService;
+    @Autowired
+    private TicketDepartmentRepository ticketDepartmentRepository;
 
     // ✅ Get all departments (Fetch departments)
     @GetMapping
@@ -26,7 +29,6 @@ public class TicketDepartmentController {
         }
         return ResponseEntity.ok(departments);
     }
-
     // ✅ Get users by department (Fetch users by department)
     @GetMapping("/by-department")
     public ResponseEntity<List<TicketDepartment>> getUsersByDepartment(@RequestParam String department) {
@@ -37,32 +39,19 @@ public class TicketDepartmentController {
         return ResponseEntity.ok(users);
     }
 
+    @GetMapping("/{email}")
+    public TicketDepartment getDepartmentByEmail(@PathVariable String email){
+        return ticketDepartmentRepository.findByEmailId(email)
+                .orElseThrow(()-> new RuntimeException(("Department not found for email: "+email)));
+    }
+
     // ✅ Save a user by department (SaveByDepartment)
     @PostMapping
     public ResponseEntity<TicketDepartment> saveUserByDepartment(@RequestBody TicketDepartment ticketDepartment) {
         TicketDepartment savedUser = ticketDepartmentService.saveUserToDepartment(ticketDepartment);
         return ResponseEntity.ok(savedUser);
     }
-
-    // ✅ Update user status (active/inactive)
-//    @PutMapping("/status/{id}")
-//    public ResponseEntity<String> updateUserStatus(
-//            @PathVariable String id,
-//            @RequestBody Map<String, Boolean> requestBody
-//    ) {
-//        Boolean isActive = requestBody.get("isActive");
-//        // Do stuff...
-//    }
-//    @PutMapping("/status/{id}")
-//    public ResponseEntity<String> updateUserStatus(@PathVariable String id, @RequestParam Boolean isActive) {
-//        Optional<TicketDepartment> updated = ticketDepartmentService.updateUserStatus(id, isActive);
-//        if (updated.isPresent()) {
-//            return ResponseEntity.ok("User status updated successfully.");
-//        } else {
-//            return ResponseEntity.notFound().build();
-//        }
-//    }
-    @PutMapping("/status/{id}")
+    @PutMapping("/status/{email}")
     public ResponseEntity<String> updateUserStatus(
             @PathVariable String id,
             @RequestBody Map<String, Boolean> requestBody

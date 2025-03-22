@@ -10,9 +10,8 @@ import java.util.List;
 
 @Repository
 public interface TicketRepository extends JpaRepository<Tickets, String> {
-
+    List<Tickets> findByStatus(String status);
     List<Tickets> findByCreatedBy(String createdBy);
-
     List<Tickets> findByAssignTo(String assignTo);
 
 

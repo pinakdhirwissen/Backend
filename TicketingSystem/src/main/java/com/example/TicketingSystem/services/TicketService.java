@@ -14,6 +14,9 @@ public class TicketService {
 
     @Autowired
     private TicketRepository ticketRepository;
+    public Tickets getTicketById(String ticketId) {
+        return ticketRepository.findById(ticketId).orElse(null);
+    }
 
     public Tickets createTicket(Tickets ticket) {
         return ticketRepository.save(ticket);

@@ -6,8 +6,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.ZoneId;
+import java.time.Instant;
 
 @Entity
 @Table(name = "Tickets")
@@ -17,12 +20,8 @@ import java.time.format.DateTimeFormatter;
 public class Tickets {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    @Column(name = "id", length = 100, nullable = false, updatable = false)
-    private String id;
-
-    @Column(name = "request_id", length = 50, nullable = false, updatable = false, unique = true)
-    private String requestId;
+    @Column(name = "ticket_id", length = 50, nullable = false, updatable = false, unique = true)
+    private String ticketId;
 
     @NotBlank(message = "Title is required")
     @Size(max = 200, message = "Title must be less than 200 characters")
@@ -58,18 +57,18 @@ public class Tickets {
     @Size(max = 30)
     @Column(name = "priority", length = 30)
     private String priority;
-
     @Column(name = "due_date")
-    private LocalDateTime dueDate;
-
+    private LocalDate dueDate;
+    @Column(name = "status", length = 20, nullable = false)
+    private String status = "Open"; // Default value
     // Automatically set the creation date and requestId when persisting
     @PrePersist
     protected void onCreate() {
         this.createdDate = LocalDateTime.now();
-        if (this.requestId == null || this.requestId.isBlank()) {
-            this.requestId = generateRequestId();
+        if (this.ticketId == null || this.ticketId.isBlank()) {
+            this.ticketId = generateRequestId();
         }
-        System.out.println("Generated Request ID: " + this.requestId); // Debugging log
+      //  System.out.println("Generated Request ID: " + this.ticketId); // Debugging log
     }
 
     // Automatically update the updatedDate when merging
@@ -77,9 +76,8 @@ public class Tickets {
     protected void onUpdate() {
         this.updatedDate = LocalDateTime.now();
     }
-
     private String generateRequestId() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmss");
-        return "REQ_" + LocalDateTime.now().format(formatter);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMddHHmmssSSS");
+        return "REQ" + LocalDateTime.ofInstant(Instant.now(), ZoneId.systemDefault()).format(formatter);
     }
 }
