@@ -13,9 +13,11 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 public class TicketComments {
+
     @Id
-    @Column(name = "id", length = 50)  // Assuming max length is 50
-    private String ticketId;  // Primary key as String
+    @GeneratedValue(strategy = GenerationType.IDENTITY)  // Auto-generate primary key
+    @Column(name = "comment_id", updatable = false, nullable = false)
+    private Long commentId;
 
     @NotBlank(message = "Comment is required")
     @Column(name = "comment", length = 1000, nullable = false)
@@ -33,20 +35,23 @@ public class TicketComments {
     @Column(name = "is_edited", nullable = false)
     private boolean isEdited = false;
 
-    @OneToOne
-    @MapsId // Ensures ticket_id is both primary key and foreign key
+    @ManyToOne // One ticket can have multiple comments
     @JoinColumn(name = "ticket_id", referencedColumnName = "ticket_id", nullable = false)
-    private Tickets ticket;
+    private Tickets ticketId;
+
     @PrePersist
     protected void onCreate() {
         if (this.commentedDate == null) {
             this.commentedDate = LocalDateTime.now();
         }
     }
+
     @PreUpdate
     protected void onUpdate() {
         if (this.isEdited) {
             this.editedDate = LocalDateTime.now();
         }
     }
+
+   
 }

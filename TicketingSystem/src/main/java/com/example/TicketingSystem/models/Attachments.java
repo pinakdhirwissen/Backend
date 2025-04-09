@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "Uploads_Attachments", indexes = {
+@Table(name = "uploads_attachments", indexes = {
         @Index(name = "idx_ticket_id", columnList = "ticketId")
 })
 @Getter
@@ -14,18 +14,21 @@ import lombok.Setter;
 public class Attachments {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
-    @Column(nullable = false)
-    private String ticketId; // Foreign Key to Ticket
+    @ManyToOne
+    @JoinColumn(name = "ticket_Id", referencedColumnName = "ticket_id")
+    private Tickets ticketId;
 
-    @Column(nullable = false)
+    @Column()
     private String filePath; // Cloudinary URL
 
-    @Column(nullable = false)
+    @Column()
     private String typeOfFile;
 
-    @Column(nullable = false)
+    @Column()
     private String fileName;
+
+
 }
